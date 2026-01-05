@@ -1,28 +1,29 @@
-# Arduino DHT11 Temperature & Humidity Monitor
+# Arduino Humidity & Temperature Monitor
 
 ## Overview
-This project reads **temperature and humidity** from a DHT11 sensor and displays the values both on the **Serial Monitor** and on a **16x2 LCD screen**.
+This project is a **non-blocking indoor humidity and temperature monitor** built with Arduino, a DHT11 sensor, a 16x2 LCD, and three status LEDs.
 
-It is a simple but concrete embedded project focused on real-world data acquisition and visualization.
+The system continuously measures environmental conditions and provides clear visual feedback using both a display and color-coded LEDs.
 
 ## What it does
-- Reads humidity (%) from a DHT11 sensor
-- Reads temperature (°C) from a DHT11 sensor
-- Prints values to the Serial Monitor
-- Displays values on a 16x2 LCD
-- Handles sensor read errors gracefully
+- Reads humidity (%) and temperature (°C) from a DHT11 sensor
+- Uses a state-based logic to classify humidity levels
+- Displays live data on a 16x2 LCD
+- Uses three LEDs to indicate air condition status
+- Operates without `delay()` using time-based scheduling (`millis()`)
 
 ## How it works
-- The DHT11 sensor is read using the `DHT` library
-- Data is fetched as floating-point values
-- If the sensor returns invalid data (`NaN`), the loop exits safely
-- Values are refreshed every 2 seconds
-- The LCD is cleared after each update cycle
+- The DHT11 sensor is read at safe intervals to avoid invalid readings
+- Humidity values are mapped to logical states (`DRY`, `WARNING`, `OK`, `HUMID`)
+- LEDs are updated only when new sensor data is available
+- The LCD refreshes independently at a fixed interval
+- The last valid readings are preserved between updates
 
 ## Requirements
 - Arduino Uno (or compatible)
 - DHT11 temperature & humidity sensor
 - 16x2 LCD (HD44780 compatible)
+- 3 LEDs (red, yellow, green) with resistors
 - Potentiometer for LCD contrast
 - Jumper wires
 - Libraries:
@@ -30,27 +31,28 @@ It is a simple but concrete embedded project focused on real-world data acquisit
   - `LiquidCrystal`
 
 ## Usage
-1. Connect the DHT11 data pin to **digital pin 2**
-2. Connect the LCD using 4-bit mode (pins 7–12)
-3. Upload the sketch to Arduino
-4. Open the Serial Monitor at **9600 baud**
-5. Observe temperature and humidity values on both Serial Monitor and LCD
+1. Connect the DHT11 data pin to digital pin 10
+2. Connect the LCD in 4-bit mode
+3. Connect LEDs to pins 11 (red), 12 (yellow), and 13 (green)
+4. Upload the sketch
+5. Observe real-time humidity and temperature feedback
 
 ## Output
-- Serial Monitor:
-  - `Humidity: XX % | Temperature: XX °C`
 - LCD:
-  - Line 1: Humidity value
-  - Line 2: Temperature value
+  - Line 1: Humidity percentage
+  - Line 2: Temperature in Celsius
+- LEDs:
+  - Green: Optimal humidity
+  - Yellow: Warning range
+  - Red: Critical dry or humid conditions
 
 ## Notes
-- The DHT11 has limited accuracy and slow refresh rate
-- A delay of 2 seconds is required for reliable readings
-- LCD is cleared after each cycle to avoid ghosting
+- The DHT11 has limited precision and slow refresh rates
+- Read intervals are enforced to ensure sensor stability
+- The system is designed to run continuously without blocking
 
 ## Possible improvements
+- Add hysteresis to avoid rapid state switching
 - Replace DHT11 with DHT22 for better accuracy
-- Add visual status indicators (LEDs)
-- Add threshold alerts for humidity levels
-- Store readings over time
-- Enclose the project in a dedicated case
+- Add buzzer alerts for critical conditions
+- Add data logging or wireless connectivity
